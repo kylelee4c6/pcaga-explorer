@@ -20,12 +20,13 @@ system_prompt = (
 def render_chat_page():
     menu()
     # Load environment variables
-    load_dotenv(override=True)
-    OPENAI_API_KEY = os.environ.get("OPENAI_API_KEY")
-    ASTRA_DB_APPLICATION_TOKEN = os.environ["ASTRA_DB_APPLICATION_TOKEN"]
-    ASTRA_DB_API_ENDPOINT = os.environ["ASTRA_DB_API_ENDPOINT"]
-    ASTRA_DB_KEYSPACE = os.environ.get("ASTRA_DB_KEYSPACE")
-    ASTRA_DB_API_KEY_NAME = os.environ.get("ASTRA_DB_API_KEY_NAME") or None
+    OPENAI_API_KEY = st.secrets['openai']["OPENAI_API_KEY"]
+    MODEL_NAME = st.secrets["openai"]["OPENAI_MODEL"]
+    ASTRA_DB_APPLICATION_TOKEN = st.secrets["astra"]["ASTRA_DB_APPLICATION_TOKEN"]
+    ASTRA_DB_API_ENDPOINT = st.secrets["astra"]["ASTRA_DB_API_ENDPOINT"]
+    ASTRA_DB_KEYSPACE = st.secrets["astra"]["ASTRA_DB_KEYSPACE"]
+    ASTRA_DB_API_KEY_NAME = st.secrets["astra"]["ASTRA_DB_API_KEY_NAME"]
+
     # Vector store setup
     vectorize_options = VectorServiceOptions(
         provider="openai",

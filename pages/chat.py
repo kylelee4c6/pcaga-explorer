@@ -20,19 +20,23 @@ def render_chat_page():
     # Load environment variables
     OPENAI_API_KEY = st.secrets['openai']["OPENAI_API_KEY"]
     MODEL_NAME = st.secrets["openai"]["OPENAI_MODEL"]
+    OPENAI_PROVIDER = st.secrets["openai"]["OPENAI_PROVIDER"]
+    OPENAI_TEXT_EMBEDDING_MODEL = st.secrets["openai"]["OPENAI_TEXT_EMBEDDING_MODEL"]
+
     ASTRA_DB_APPLICATION_TOKEN = st.secrets["astra"]["ASTRA_DB_APPLICATION_TOKEN"]
     ASTRA_DB_API_ENDPOINT = st.secrets["astra"]["ASTRA_DB_API_ENDPOINT"]
     ASTRA_DB_KEYSPACE = st.secrets["astra"]["ASTRA_DB_KEYSPACE"]
     ASTRA_DB_API_KEY_NAME = st.secrets["astra"]["ASTRA_DB_API_KEY_NAME"]
+    ASTRA_COLLECTION_NAME = st.secrets["astra"]["ASTRA_COLLECTION_NAME"]
 
     # Vector store setup
     vectorize_options = VectorServiceOptions(
-        provider="openai",
-        model_name="text-embedding-3-small",
+        provider=OPENAI_PROVIDER,
+        model_name=OPENAI_TEXT_EMBEDDING_MODEL,
         authentication={"providerKey": ASTRA_DB_API_KEY_NAME},
     )
     vector_store = AstraDBVectorStore(
-        collection_name="langchain_integration_demo_vectorize",
+        collection_name=ASTRA_COLLECTION_NAME,
         token=ASTRA_DB_APPLICATION_TOKEN,
         api_endpoint=ASTRA_DB_API_ENDPOINT,
         namespace=ASTRA_DB_KEYSPACE,

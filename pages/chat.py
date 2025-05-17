@@ -3,8 +3,6 @@ from langchain_openai import ChatOpenAI
 from langchain.schema import HumanMessage, SystemMessage
 from langchain_astradb import AstraDBVectorStore
 from astrapy.info import VectorServiceOptions
-from dotenv import load_dotenv
-import os
 from menu import menu
 
 system_prompt = (
@@ -74,7 +72,7 @@ def render_chat_page():
 
         # Generate response using OpenAI via LangChain
         try:
-            chat = ChatOpenAI(temperature=0, openai_api_key=OPENAI_API_KEY, model='gpt-4o-mini')
+            chat = ChatOpenAI(temperature=0, openai_api_key=OPENAI_API_KEY, model=MODEL_NAME)
             response = chat([
                 SystemMessage(content=system_prompt),
                 HumanMessage(content=f"Context: {context}\n\nQuestion: {prompt}")

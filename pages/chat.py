@@ -66,7 +66,7 @@ def render_chat_page():
         # Perform vector search for relevant documents
         try:
             results = vector_store.similarity_search(prompt, k=st.session_state.num_references)
-            context = "\n".join([f"{res.page_content} Source: {res.metadata.get("title")} URL: {res.metadata.get("author", "N/A")} Page Number: {res.metadata.get("page")}" for res in results])
+            context = "\n".join([f"{res.page_content} Source: {res.metadata.get('title')} URL: {res.metadata.get('author', 'N/A')} Page Number: {res.metadata.get('page')}" for res in results])
             references = [
                 {
                     "content": res.page_content,

@@ -15,8 +15,13 @@ system_prompt = (
     "refine their query or explore related topics. Your tone should be informative, respectful, and theologically aware, "
     "recognizing the Reformed and confessional context of the PCA."
 )
+# Keep track of the current page
+if "current_page" not in st.session_state:
+    st.session_state.current_page = "chat"
 def render_chat_page():
+    st.session_state.current_page = "chat"
     menu()
+
     # Load environment variables
     OPENAI_API_KEY = st.secrets['openai']["OPENAI_API_KEY"]
     MODEL_NAME = st.secrets["openai"]["OPENAI_MODEL"]
@@ -42,7 +47,7 @@ def render_chat_page():
         namespace=ASTRA_DB_KEYSPACE,
         collection_vector_service_options=vectorize_options,
     )
-
+    st.markdown("## Chat with ClerkGPT")
     # Initialize chat history
     if "messages" not in st.session_state:
         st.session_state.messages = []
@@ -60,13 +65,14 @@ def render_chat_page():
 
         # Perform vector search for relevant documents
         try:
-            results = vector_store.similarity_search(prompt, k=3)
+            results = vector_store.similarity_search(prompt, k=st.session_state.num_references)
             context = "\n".join([f"{res.page_content}" for res in results])
             references = [
                 {
                     "content": res.page_content,
                     "page": res.metadata.get("page", "N/A"),
-                    "file_path": res.metadata.get("file_path", "Unknown File"),
+                    "title": res.metadata.get("title") or "N/A",
+                    "url": res.metadata.get("author", "N/A"),
                 }
                 for res in results
             ]
@@ -93,7 +99,10 @@ def render_chat_page():
             st.markdown("### References")
             for i, ref in enumerate(references, start=1):
                 
-                with st.expander(f"Reference {i} (Page {ref['page']}, File: {ref['file_path']})"):
+                with st.expander(f"Doc. {i}: (Title: {ref['title']}, Page {ref['page']}, URL: {ref['url']})"):
+                    # Show URL
+                    st.markdown(f"[Link to Document]({ref['url']})")
+                    st.markdown("**Content:**")
                     st.markdown(ref["content"])
         st.session_state.messages.append({"role": "assistant", "content": assistant_message})
 

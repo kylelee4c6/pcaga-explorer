@@ -1,8 +1,10 @@
 import streamlit as st
 
 WELCOME_MESSAGE: str = "Welcome to ClerkGPT!"
-
+if "current_page" not in st.session_state:
+    st.session_state.current_page = "landing"
 def render_landing_page() -> None:
+    st.session_state.current_page = "landing"
     c1, c2, c3 = st.columns([1, 2, 1])
     with c2:
 

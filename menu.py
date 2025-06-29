@@ -8,12 +8,3 @@ def menu()-> None:
     st.sidebar.page_link("pages/about.py", label="About", icon="ℹ️")
     st.sidebar.page_link("pages/chat.py", label="Chat", icon="🤖")
     st.sidebar.page_link("pages/faq.py", label="FAQ", icon="❓")
-    if st.session_state.current_page == "chat":
-        st.sidebar.number_input(
-            label="Select the number of references to consider.",
-            min_value=0,
-            max_value=10,
-            value=5,
-            step=1,
-            key = "num_references"
-    )

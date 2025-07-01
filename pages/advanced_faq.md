@@ -3,7 +3,7 @@
 #### **What models are used for embedding and generation?**
 
 * **Embedding**: Document chunks are embedded using OpenAI’s `text-embedding-3-large` model.
-* **Generation**: The application uses **OpenAI’s GPT-4o Mini** model for generating responses based on retrieved context. Model selection can be swapped via environment configuration if needed.
+* **Generation**: The application uses **OpenAI’s gpt-4.1-mini** model for generating responses based on retrieved context. Model selection can be swapped via environment configuration if needed.
 
 #### **Where are the documents stored?**
 

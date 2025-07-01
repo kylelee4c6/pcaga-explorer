@@ -7,14 +7,13 @@ from urllib.parse import urlparse
 from langchain.prompts import ChatPromptTemplate, SystemMessagePromptTemplate, HumanMessagePromptTemplate
 from langchain.chains import ConversationalRetrievalChain
 from langchain.memory import ConversationBufferMemory
-from astrapy.info import (
-    ColumnType,)
+
 from astrapy import DataAPIClient
 from menu import menu
 import uuid
 from datetime import datetime
 import time
-# --- Memory setup ---
+# 
 if "memory" not in st.session_state:
     st.session_state.memory = ConversationBufferMemory(
         memory_key="chat_history", return_messages=True,

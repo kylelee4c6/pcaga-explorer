@@ -22,11 +22,11 @@ Not at all! This tool is meant to help you **find** the right documents and **un
 
 #### **Can I trust it with sensitive or private information?**
 
-Please don’t enter personal, private, or sensitive information. This tool is designed for public historical research, not for pastoral counseling or handling confidential matters. I may need to track queries in a database.
+Please don’t enter personal, private, or sensitive information. This tool is designed for public historical research, not for pastoral counseling or handling confidential matters. I am tracking your queries for research purposes.
 
 #### **Is the AI learning from what I type?**
 
-No. This app does not store or use your questions to train the AI. Everything you type stays private within your session. Also, it's too expensive to fine-tune the model. I welcome an overture for a dedicated set of funds, say in the millions, to refine an OpenAI model.
+No. This app does not track your questions to train the AI. Also, it's too expensive to fine-tune the model. I welcome an overture for a dedicated set of funds, say in the millions, to refine an OpenAI model.
 
 #### **Does this cost anything?**
 

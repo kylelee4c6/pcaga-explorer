@@ -5,7 +5,7 @@ def menu()-> None:
     except:
         pass
     st.sidebar.image("images/logo.png")
-    st.sidebar.header(f"Welcome to ClerkGPT, {st.user.name}!")
+    st.sidebar.header(f"Welcome, {st.user.name}!")
     if st.sidebar.button("Log out"):
         st.logout()
         st.session_state["authenticated"] = False

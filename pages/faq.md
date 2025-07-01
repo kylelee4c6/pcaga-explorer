@@ -22,7 +22,7 @@ Not at all! This tool is meant to help you **find** the right documents and **un
 
 #### **Can I trust it with sensitive or private information?**
 
-Please don’t enter personal, private, or sensitive information. This tool is designed for public historical research, not for pastoral counseling or handling confidential matters.
+Please don’t enter personal, private, or sensitive information. This tool is designed for public historical research, not for pastoral counseling or handling confidential matters. I may need to track queries in a database.
 
 #### **Is the AI learning from what I type?**
 

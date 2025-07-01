@@ -31,10 +31,6 @@
 
 * Responses include the most relevant document sources used to generate the answer. Each chunk is tied to metadata that includes source filenames and urls, which can be displayed alongside the answer.
 
-#### **Does the app support multi-turn or conversational memory?**
-
-* No. This is a **single-turn RAG** interface. Context is limited to the current user query and relevant retrieved chunks. Multi-turn memory or agentic behavior is not implemented.
-
 #### **How is prompt construction handled?**
 
 * Prompt templates follow a basic structure: system instruction + user question + retrieved context. The context is formatted for readability (e.g., section headers, block quotes).

@@ -61,6 +61,7 @@ def render_references(docs):
 
 def render_chat_page():
     menu()
+    st.toast(f"From Kyle: Hi {st.user.get('name')}I am tracking your queries so I can find themes on what other people are searching up.", icon="✅")
     if 'session_id' not in st.session_state:
         st.session_state.session_id = str(uuid.uuid4())
     if "current_page" not in st.session_state:

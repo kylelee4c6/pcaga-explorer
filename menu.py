@@ -1,9 +1,5 @@
 import streamlit as st
 def menu()-> None:
-    try:
-        st.set_page_config(layout = "wide")
-    except:
-        pass
     st.sidebar.image("images/logo.png")
     st.sidebar.header(f"Welcome, {st.user.name}!")
     if st.sidebar.button("Log out"):

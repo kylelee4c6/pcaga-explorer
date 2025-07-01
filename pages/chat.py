@@ -13,12 +13,19 @@ from astrapy import DataAPIClient
 from menu import menu
 import uuid
 from datetime import datetime
+import time
 # --- Memory setup ---
 if "memory" not in st.session_state:
     st.session_state.memory = ConversationBufferMemory(
         memory_key="chat_history", return_messages=True,
         output_key="answer"  # This is important for the chain to return the answer
     )
+if "toast_shown" not in st.session_state:
+    st.session_state.toast_shown = False
+if not st.session_state.toast_shown:
+    st.toast(f"From Kyle: Hi {st.user.get('name')}. For research purposes, your queries may be recorded and analyzed. I appreciate your understanding as I learn to figure out how to make this application more useful. I may contact you to learn more about your use case to apply more advanced features. ", icon="🔎")
+    st.session_state.toast_shown = True
+    time.sleep(10)
 if "messages" not in st.session_state:
     st.session_state.messages = []
 @st.cache_resource(show_spinner=False)
@@ -61,7 +68,7 @@ def render_references(docs):
 
 def render_chat_page():
     menu()
-    st.toast(f"From Kyle: Hi {st.user.get('name')}I am tracking your queries so I can find themes on what other people are searching up.", icon="✅")
+    
     if 'session_id' not in st.session_state:
         st.session_state.session_id = str(uuid.uuid4())
     if "current_page" not in st.session_state:

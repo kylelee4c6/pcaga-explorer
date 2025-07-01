@@ -18,8 +18,6 @@ def render_landing_page():
                 st.login()
             st.session_state["made_attempt"] = True
 
-    allowed_emails = st.secrets["allowed_users"]["emails"]
-
     if not getattr(st.user, "is_logged_in", False):
         login_screen()
         st.stop()

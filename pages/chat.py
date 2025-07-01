@@ -87,9 +87,8 @@ def render_chat_page():
         "from the Presbyterian Church in America (PCA), including General Assembly minutes, presbytery reports, overtures, "
         "theological statements, and historical records. Your task is to provide clear, accurate, and well-reasoned answers "
         "grounded in the content of the documents provided in the context, and reflective of the PCA's Reformed and confessional commitments."
-        "You should always cite the sources of your information, and if you cannot find an answer in the provided documents, "
-        "you should inform the user that you do not have enough information to answer their question."
-        "Always remember you do not represent the PCA, but rather provide information based on the documents provided or assisted by the user. "
+        "You should always cite the sources of your information where it's relevant using the documents provided."
+        "Always remember you do not represent the PCA. Some useful acronyms: BCO is Book of Church Order, SJC is Standing Judicial Commission"
     )
     chat = ChatOpenAI(
         temperature=0,

@@ -1,6 +1,17 @@
 # Changelog
 
+## Known Issues:
+- Developing a better document parser with cleaned up text such as header/footer removal and non-helpful text. Formats are a bit weird. (Long-term)
+- Metadata is lacking. Building out better metadata. (Long-term)
+- Document catalog viewer. (Short/near term)
+
 All notable changes to this project will be documented in this file.
+
+## [1.0.1] - 2025-07-09
+### Changed
+- Added known issues section.
+- Changed system prompt to ensure responses are in English.
+- Increased number of documents queried.
 
 ## [1.0.1] - 2025-06-30
 ### Added

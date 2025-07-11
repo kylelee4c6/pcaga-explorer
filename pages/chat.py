@@ -189,8 +189,8 @@ def render_chat_page():
                         try:
                             # Insert the query record into the database
                             query_data = {
-                                "query_id": st.session_state.session_id,
-                                "session_id": str(uuid.uuid4()),
+                                "query_id":str(uuid.uuid4()),
+                                "session": st.session_state.session_id,
                                 "user": st.user.get('email'),
                                 "query": prompt,
                                 "timestamp": datetime.now().isoformat(),

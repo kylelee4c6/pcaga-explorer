@@ -4,21 +4,17 @@ from langchain_openai import ChatOpenAI
 from langchain_astradb import AstraDBVectorStore
 from astrapy.info import VectorServiceOptions
 from urllib.parse import urlparse
-from langchain.prompts import ChatPromptTemplate, SystemMessagePromptTemplate, HumanMessagePromptTemplate
-from langchain.chains import ConversationalRetrievalChain
-from langchain.memory import ConversationBufferMemory
+
+from langchain.chains import create_history_aware_retriever, create_retrieval_chain
+from langchain.chains.combine_documents import create_stuff_documents_chain
+from langchain_core.prompts import ChatPromptTemplate, MessagesPlaceholder
+from langchain_core.messages import HumanMessage, AIMessage
 
 from astrapy import DataAPIClient
 from menu import menu
 import uuid
 from datetime import datetime
 import time
-# 
-if "memory" not in st.session_state:
-    st.session_state.memory = ConversationBufferMemory(
-        memory_key="chat_history", return_messages=True,
-        output_key="answer"  # This is important for the chain to return the answer
-    )
 if "toast_shown" not in st.session_state:
     st.session_state.toast_shown = False
 if not st.session_state.toast_shown:
@@ -27,6 +23,7 @@ if not st.session_state.toast_shown:
     time.sleep(10)
 if "messages" not in st.session_state:
     st.session_state.messages = []
+
 @st.cache_resource(show_spinner=False)
 def get_vector_store():
     secrets = st.secrets
@@ -76,37 +73,71 @@ def render_chat_page():
     st.markdown("Welcome to ClerkGPT! Ask your questions below.")
 
     vector_store = get_vector_store()
-    retriever = vector_store.as_retriever(search_type = "similarity_score_threshold",
-    search_kwargs={"score_threshold": 0.4, "k": 10})
+    retriever = vector_store.as_retriever(
+        search_type="similarity_score_threshold",
+        search_kwargs={"score_threshold": 0.4, "k": 15}
+    )
 
     query_tracker = get_query_store()
 
-    system_prompt = (
-        "You are a helpful and theologically-informed research assistant trained to answer questions using documents "
-        "from the Presbyterian Church in America (PCA), including General Assembly minutes, presbytery reports, overtures, "
-        "theological statements, and historical records. Your task is to provide clear, accurate, and well-reasoned answers "
-        "grounded in the content of the documents provided in the context, and reflective of the PCA's Reformed and confessional commitments."
-        "You should always cite the sources of your information where it's relevant using the documents provided."
-        "Always remember you do not represent the PCA. Some useful acronyms: BCO is Book of Church Order, SJC is Standing Judicial Commission"
-    )
     chat = ChatOpenAI(
         temperature=0,
         openai_api_key=st.secrets['openai']["OPENAI_API_KEY"],
         model=st.secrets["openai"]["OPENAI_MODEL"],
     )
-    custom_prompt = ChatPromptTemplate.from_messages([
-        SystemMessagePromptTemplate.from_template(system_prompt),
-        HumanMessagePromptTemplate.from_template("{context}\n\nQuestion: {question}")
-    ])
 
-    qa_chain = ConversationalRetrievalChain.from_llm(
-        llm=chat,
-        retriever=retriever,
-        memory=st.session_state.memory,
-        combine_docs_chain_kwargs={"prompt": custom_prompt},
-        return_source_documents=True,
-        output_key="answer"
+    # Create history-aware retriever
+    contextualize_q_system_prompt = (
+        "Given a chat history and the latest user question "
+        "which might reference context in the chat history, "
+        "formulate a standalone question which can be understood "
+        "without the chat history. Do NOT answer the question, "
+        "just reformulate it if needed and otherwise return it as is."
     )
+    
+    contextualize_q_prompt = ChatPromptTemplate.from_messages([
+        ("system", contextualize_q_system_prompt),
+        MessagesPlaceholder("chat_history"),
+        ("human", "{input}"),
+    ])
+    
+    history_aware_retriever = create_history_aware_retriever(
+        chat, retriever, contextualize_q_prompt
+    )
+
+    # Create the question-answering chain
+    system_prompt = (
+        "You are a helpful and theologically-informed research assistant trained to answer questions using documents "
+        "from the Presbyterian Church in America (PCA), including General Assembly minutes, presbytery reports, overtures, "
+        "theological statements, and historical records. Your task is to provide clear, accurate, and well-reasoned answers "
+        "grounded in the content of the documents provided in the context, and reflective of the PCA's Reformed and confessional commitments. "
+        "You should always cite the sources of your information where it's relevant using the documents provided. "
+        "Always remember you do not represent the PCA. Some useful acronyms: BCO is Book of Church Order, SJC is Standing Judicial Commission. Ensure responses are in English."
+        "\n\n"
+        "{context}"
+    )
+    
+    qa_prompt = ChatPromptTemplate.from_messages([
+        ("system", system_prompt),
+        MessagesPlaceholder("chat_history"),
+        ("human", "{input}"),
+    ])
+    
+    question_answer_chain = create_stuff_documents_chain(chat, qa_prompt)
+    
+    # Create the final retrieval chain
+    qa_chain = create_retrieval_chain(history_aware_retriever, question_answer_chain)
+
+    # Helper function to convert messages to chat history format
+    def get_chat_history():
+        """Convert session messages to chat history format for the new chain."""
+        chat_history = []
+        for message in st.session_state.messages:
+            if message["role"] == "user":
+                chat_history.append(HumanMessage(content=message["content"]))
+            elif message["role"] == "assistant":
+                chat_history.append(AIMessage(content=message["content"]))
+        return chat_history
 
     # Display chat history
     for message in st.session_state.messages:
@@ -120,35 +151,60 @@ def render_chat_page():
         st.session_state.messages.append({"role": "user", "content": prompt})
         with st.chat_message("user"):
             st.markdown(prompt)
-        try:
-            with st.spinner("Generating response..."):
-                result = qa_chain.invoke({
-                    "question": prompt,
-                    "chat_history": st.session_state.memory.buffer
-                })
-                # Store query into database
-                query_tracker.insert_one({"query_id": str(uuid.uuid4()),
-                                          "session": st.session_state.get("session_id"),
-                                          "user": st.user.email if hasattr(st.user, 'email') else "unknown",
-                                          "query": prompt,
-                                          "timestamp":datetime.now().isoformat()})
-                assistant_message = result["answer"]
-                docs = result.get("source_documents", [])
-        except Exception as e:
-            assistant_message = f"Error generating response: {e}"
-            docs = []
-        st.session_state.messages.append({
-            "role": "assistant",
-            "content": assistant_message,
-            "results": docs,
-        })
+        
+        # Get chat history for the chain
+        chat_history = get_chat_history()
+        
+        # Generate response
         with st.chat_message("assistant"):
-            st.markdown(assistant_message,)
-            render_references(docs)
+            with st.spinner("Thinking..."):
+                try:
+                    # Invoke the new chain
+                    result = qa_chain.invoke({
+                        "input": prompt,
+                        "chat_history": chat_history
+                    })
+                    
+                    # Extract answer and source documents
+                    answer = result["answer"]
+                    source_docs = result.get("context", [])
+                    
+                    # Display the answer
+                    st.markdown(answer)
+                    
+                    # Add assistant message to chat history
+                    message_data = {
+                        "role": "assistant", 
+                        "content": answer,
+                        "results": source_docs
+                    }
+                    st.session_state.messages.append(message_data)
+                    
+                    # Display references if available
+                    if source_docs:
+                        render_references(source_docs)
+                        
+                    # Track query - Fixed method call
+                    if query_tracker:
+                        try:
+                            # Insert the query record into the database
+                            query_data = {
+                                "query_id": st.session_state.session_id,
+                                "session_id": str(uuid.uuid4()),
+                                "user": st.user.get('email'),
+                                "query": prompt,
+                                "timestamp": datetime.now().isoformat(),
+                            }
+                            query_tracker.insert_one(query_data)
+                        except Exception as query_error:
+                            st.warning(f"Failed to track query: {str(query_error)}")
+                        
+                except Exception as e:
+                    st.error(f"An error occurred: {str(e)}")
+                    st.session_state.messages.append({
+                        "role": "assistant", 
+                        "content": f"I apologize, but I encountered an error: {str(e)}"
+                    })
 
-
-
-
-# --- Run the chat page
 if 'authenticated' in st.session_state and st.session_state['authenticated']:
     render_chat_page()

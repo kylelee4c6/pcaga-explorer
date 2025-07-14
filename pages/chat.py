@@ -23,7 +23,9 @@ if not st.session_state.toast_shown:
     time.sleep(10)
 if "messages" not in st.session_state:
     st.session_state.messages = []
-
+if "current_page" not in st.session_state:
+    st.session_state.current_page = "chat"
+st.session_state.current_page = "chat"
 @st.cache_resource(show_spinner=False)
 def get_vector_store():
     secrets = st.secrets
@@ -64,11 +66,10 @@ def render_references(docs):
 
 def render_chat_page():
     menu()
-    
+    st.session_state.current_page = "chat"
     if 'session_id' not in st.session_state:
         st.session_state.session_id = str(uuid.uuid4())
-    if "current_page" not in st.session_state:
-        st.session_state.current_page = "chat"
+
     st.title("ClerkGPT Chat")
     st.markdown("Welcome to ClerkGPT! Ask your questions below.")
 

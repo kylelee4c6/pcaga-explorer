@@ -12,7 +12,6 @@ def menu()-> None:
     if st.session_state.current_page == 'chat':
         if st.sidebar.button("Reset Conversation"):
             st.session_state.messages = []
-            st.session_state.memory.clear()
     st.sidebar.page_link("pages/about.py", label="About", icon="ℹ️")
     st.sidebar.page_link("pages/chat.py", label="Chat", icon="🤖")
     st.sidebar.page_link("pages/faq.py", label="FAQ", icon="❓")

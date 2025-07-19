@@ -7,6 +7,9 @@ All notable changes to this project will be documented in this file.
 - Metadata is lacking. Building out better metadata. (Long-term)
 - Document catalog viewer. (Short/near term)
 
+## [1.0.3] - 2025-07-18
+### Added
+- Document catalog viewer
 
 ## [1.0.2] - 2025-07-11
 ### Changed

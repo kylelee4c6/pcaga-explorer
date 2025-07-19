@@ -16,3 +16,4 @@ def menu()-> None:
     st.sidebar.page_link("pages/chat.py", label="Chat", icon="🤖")
     st.sidebar.page_link("pages/faq.py", label="FAQ", icon="❓")
     st.sidebar.page_link("pages/changelog.py", label="Changelog", icon="📜")
+    st.sidebar.page_link("pages/doc_catalog.py", label="Document Catalog", icon="📚")

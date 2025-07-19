@@ -5,7 +5,6 @@ All notable changes to this project will be documented in this file.
 ## Known Issues/Roadmap:
 - Developing a better document parser with cleaned up text such as header/footer removal and non-helpful text. Formats are a bit weird. (Long-term)
 - Metadata is lacking. Building out better metadata. (Long-term)
-- Document catalog viewer. (Short/near term)
 
 ## [1.0.3] - 2025-07-18
 ### Added

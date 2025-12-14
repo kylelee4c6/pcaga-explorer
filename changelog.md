@@ -6,6 +6,11 @@ All notable changes to this project will be documented in this file.
 - Developing a better document parser with cleaned up text such as header/footer removal and non-helpful text. Formats are a bit weird. (Long-term)
 - Metadata is lacking. Building out better metadata. (Long-term)
 
+
+## [1.0.4]  2025-12-13
+- Added agentic system via LangGraph
+- Updated LLM to GPT 5 mini.
+
 ## [1.0.3] - 2025-07-18
 ### Added
 - Document catalog viewer
